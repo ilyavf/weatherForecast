@@ -11,10 +11,11 @@
         $el.empty();
         return data;
     });
-    var render = _.curry(function (tpl, fn, data) {
-        $results.append(tmpl(tpl, fn(data)));
+    var noop = function (a) { return a; };
+    var render = _.curry(function ($el, tpl, fn, data) {
+        $el.append(tmpl(tpl, fn(data)));
         return data;
-    });
+    })($results);
 
     // Main functions:
     function getWeather (city) {
@@ -29,15 +30,23 @@
         render("city_tmpl", _.compose(log('Received for'), _.pick(['name', 'country']), _.get('city'))),
         clearEl($results)
     );
-    function subscribe (stream, success, error) {
+    var subscribeLoop = _.curry(function ($el, stream, process) {
+        stream.subscribe(
+            process,
+            function (error) {
+                $el.empty();
+                render('error_tmpl', noop, {});
+                subscribeLoop(stream, process);
+            }
+        );
+    })($results);
 
-    }
-    function main($input, $results) {
+    function main($input) {
 
         // Retrieve input text:
         var inputStream = Rx.Observable.fromEvent($input, 'keyup')
             .map(_.compose(_.get('value'),_.get('target')))
-            .throttle(750)
+            .throttle(50)
             .filter(function (text) {
                 return text.length > 2;
             })
@@ -46,18 +55,10 @@
         // Retrieve weather results:
         var weatherStream = inputStream.flatMapLatest(getWeather);
 
-        // Render:
-        var subscription = weatherStream.subscribe(
-            processResults,
-            function (error) {
-                // Handle any errors
-                $results.empty();
-                dir(error); global.e1 = error;
-
-                $('<li>Error: ' + error + '</li>').appendTo($results);
-            });
+        // Prepare results and render:
+        subscribeLoop(weatherStream, processResults)
     }
 
-    main($input, $results);
+    main($input);
 
 }(this, ramda, jQuery));
