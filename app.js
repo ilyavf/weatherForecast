@@ -15,6 +15,9 @@
         $el.append(tmpl(tpl, fn(data)));
         return data;
     })($results);
+    function avg (list) {
+        return { avg: _.sum(list)/list.length };
+    }
 
     // Main functions:
     function getWeather (city) {
@@ -24,6 +27,7 @@
         }).promise();
     }
     var processResults = _.compose(
+        render("pressure_tmpl", _.compose(avg, _.map(_.get('pressure')))),
         _.map(render("day_weather_tmpl", _.get('temp'))),
         _.get('list'),
         render("city_tmpl", _.compose(log('Received for'), _.pick(['name', 'country']), _.get('city'))),
