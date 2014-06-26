@@ -2,7 +2,8 @@
 
     var apiUrl = "http://api.openweathermap.org/data/2.5/forecast/daily?q={city}&mode=json&units=metric&cnt=7",
         $input = $('#textInput'),
-        $results = $('#results');
+        $results = $('#results'),
+        ctx = $("#dayNightTempChart").get(0).getContext("2d");
 
     // Helpers:
     var log = _.curry(function (msg, val) { console && console.log && console.log(msg + ': ', val); return val; });
@@ -18,27 +19,7 @@
     function avg (list) {
         return { avg: _.sum(list)/list.length };
     }
-    var ctx = $("#myChart").get(0).getContext("2d");
-    var drawChart = function (items) {
-        var data = {
-            labels : ["Today","Tomorrow","+2 Days","+3 Days","+4 Days","+5 Days","+6 Days"],
-            datasets : [
-                {
-                    fillColor : "rgba(250,220,220,0.5)",
-                    strokeColor : "rgba(220,220,220,1)",
-                    data : _.map(_.compose(_.get('day'), _.get('temp')), items)
-                },
-                {
-                    fillColor : "rgba(151,187,205,0.5)",
-                    strokeColor : "rgba(151,187,205,1)",
-                    data : _.map(_.compose(_.get('night'), _.get('temp')), items)
-                }
-            ]
-        }
-        new Chart(ctx).Bar(data);
-        log('chart', data);
-        return items;
-    };
+
 
     // Main functions:
     function getWeather (city) {
@@ -47,6 +28,24 @@
             dataType: 'jsonp'
         }).promise();
     }
+
+    function drawChart (items) {
+        var data = {
+            labels : ["Today","Tomorrow","+2 Days","+3 Days","+4 Days","+5 Days","+6 Days"],
+            datasets : [{
+                fillColor : "rgba(250,220,220,0.5)",
+                strokeColor : "rgba(220,220,220,1)",
+                data : _.map(_.compose(_.get('day'), _.get('temp')), items)
+            },{
+                fillColor : "rgba(151,187,205,0.5)",
+                strokeColor : "rgba(151,187,205,1)",
+                data : _.map(_.compose(_.get('night'), _.get('temp')), items)
+            }]
+        };
+        new Chart(ctx).Bar(data);
+        return items;
+    };
+
     var processResults = _.compose(
         drawChart,
         render("pressure_tmpl", _.compose(avg, _.map(_.get('pressure')))),
@@ -55,6 +54,7 @@
         render("city_tmpl", _.compose(log('Received for'), _.pick(['name', 'country']), _.get('city'))),
         clearEl($results)
     );
+
     var subscribeLoop = _.curry(function ($el, stream, process) {
         stream.subscribe(
             process,
@@ -66,6 +66,7 @@
             }
         );
     })($results);
+
     function main($input) {
 
         // Retrieve input text:
