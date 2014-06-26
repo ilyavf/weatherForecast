@@ -3,7 +3,6 @@
 <head>
     <title>Weekly Weather Forecast</title>
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap-responsive.min.css">
 </head>
 <body>
     <div class="container">
@@ -23,15 +22,14 @@
         <li>Day: <%=day%> | Night: <%=night%> | Min: <%=min%> | Max: <%=max%></li>
     </script>
     <script type="text/html" id="city_tmpl">
-        <div>Temperature results for: <%=name%>, <%=country%></div>
+        <h3><span class="glyphicon glyphicon-globe"></span> Temperature results for: <%=name%>, <%=country%></h3>
     </script>
     <script type="text/html" id="error_tmpl">
-        <div>Sorry, some error occured. Please try to type again.</div>
+        <div class="alert alert-danger">Sorry, some error occured. Please try to type again.</div>
     </script>
 
     <!-- 3rd party libs -->
     <script src="assets/es5-shim.min.js"></script>
-    <script src="assets/json3.min.js"></script>
     <script src="assets/jquery.min.js"></script>
     <script src="assets/ramda.js"></script>
     <script src="assets/rx.lite.js"></script>

@@ -4,7 +4,6 @@
         $input = $('#textInput'),
         $results = $('#results');
 
-
     // Helpers:
     var log = _.curry(function (msg, val) { console && console.log && console.log(msg + ': ', val); return val; });
     var clearEl = _.curry(function ($el, data) {
@@ -33,6 +32,7 @@
     var subscribeLoop = _.curry(function ($el, stream, process) {
         stream.subscribe(
             process,
+            // resubscribe on error:
             function (error) {
                 $el.empty();
                 render('error_tmpl', noop, {});
@@ -40,7 +40,6 @@
             }
         );
     })($results);
-
     function main($input) {
 
         // Retrieve input text:
