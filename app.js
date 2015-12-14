@@ -1,6 +1,6 @@
 (function (global, _, $) {
 
-    var apiUrl = "http://api.openweathermap.org/data/2.5/forecast/daily?q={city}&mode=json&units=metric&cnt=7",
+    var apiUrl = "http://api.openweathermap.org/data/2.5/forecast/daily?q={city}&mode=json&units=metric&cnt=7&APIID=aabbdb9c7cddf1e33f12b2be0b8c6ec1",
         $input = $('#textInput'),
         $results = $('#results'),
         ctx = $("#dayNightTempChart").get(0).getContext("2d");
